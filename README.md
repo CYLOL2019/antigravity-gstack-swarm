@@ -4,6 +4,7 @@
 >
 > 将 Y Combinator 总裁 Garry Tan 开源的 [`garrytan/gstack`](https://github.com/garrytan/gstack) 全部底层能力（**66 个编译技能、170+ CLI 防伪账本与扫描器、5 大原生编译二进制、9 专家并行审查团**）深度移植至 **Google Antigravity 2.0 IDE**，并与原生 **`/swarm` 多智能体共享看板**及**硬件级零信任文件隔离钩子（`hooks.json`）**无缝融合，打造一支真正按硅谷互联网公司全建制运转的 AI 研发团队。
 
+[![CI](https://github.com/cxbrucewayen/antigravity-gstack-swarm/actions/workflows/ci.yml/badge.svg)](https://github.com/cxbrucewayen/antigravity-gstack-swarm/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](#quick-start--一键安装)
 [![Antigravity](https://img.shields.io/badge/Antigravity-2.0%20%2B%20%2Fswarm-10B981.svg)](#architecture--核心架构)
@@ -102,7 +103,7 @@ gstack doctor                                              # Full installation h
 > Prerequisites: [Node.js >= 20](https://nodejs.org/) and [Git for Windows](https://git-scm.com/) (includes Git Bash). Optional: Visual Studio 2022 C++ Build Tools (compiles the hardened C11 `gstack-cso-launcher.exe`). Bun and `jq` are installed automatically if missing.
 
 ```powershell
-git clone https://github.com/<your-username>/antigravity-gstack-swarm.git
+git clone https://github.com/cxbrucewayen/antigravity-gstack-swarm.git
 cd antigravity-gstack-swarm
 pwsh -ExecutionPolicy Bypass -File .\install.ps1
 ```
@@ -111,7 +112,7 @@ pwsh -ExecutionPolicy Bypass -File .\install.ps1
 > Prerequisites: `node >= 20`, `git`, `jq`, and `cc`/`clang` (optional, for native CSO launcher). Bun is installed automatically if missing.
 
 ```bash
-git clone https://github.com/<your-username>/antigravity-gstack-swarm.git
+git clone https://github.com/cxbrucewayen/antigravity-gstack-swarm.git
 cd antigravity-gstack-swarm
 bash ./install.sh
 ```
