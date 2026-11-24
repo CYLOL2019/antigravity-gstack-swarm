@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Dynamic MSYS2 -> native Windows bun.exe compatibility shim for gstack #!/usr/bin/env -S bun scripts.
+REAL_BUN=""
+for candidate in \
+  "$HOME/.bun/bin/bun.exe" \
+  "$APPDATA/npm/node_modules/bun/bin/bun.exe" \
+  "$LOCALAPPDATA/Microsoft/WinGet/Links/bun.exe" \
+  "$HOME/scoop/shims/bun.exe"; do
+  if [ -n "$candidate" ] && [ -x "$candidate" ]; then
+    REAL_BUN="$candidate"
+    break
+  fi
+done
+if [ -z "$REAL_BUN" ]; then
+  echo "gstack bun shim: could not locate native bun.exe. Install with: npm install -g bun" >&2
+  exit 127
+fi
+
+args=()
+for arg in "$@"; do
+  case "$arg" in
+    --config=/dev/null)
+      args+=("--config=NUL")
+      ;;
+    /[a-zA-Z]/*)
+      if command -v cygpath >/dev/null 2>&1; then
+        args+=("$(cygpath -m "$arg")")
+      else
+        args+=("$arg")
+      fi
+      ;;
+    *)
+      args+=("$arg")
+      ;;
+  esac
+done
+exec "$REAL_BUN" "${args[@]}"

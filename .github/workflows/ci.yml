@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run Zero-Trust Hook & Swarm Ownership Test Suite
+        run: npm test
+      - name: Verify Zero Hardcoded Personal Paths
+        shell: bash
+        run: |
+          if grep -rnE 'Users/[a-zA-Z0-9_-]+|C:\\\\Users\\\\' runtime/ plugin/ install.ps1 install.sh; then
+            echo "ERROR: Hardcoded user path detected!" >&2
+            exit 1
+          fi
+          echo "Clean: zero hardcoded paths found."

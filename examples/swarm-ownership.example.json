@@ -1,0 +1,30 @@
+{
+  "pm-ceo": {
+    "allow": ["docs/specs/**", "README.md", "TODOS.md"],
+    "deny": ["src/**"]
+  },
+  "ux-designer": {
+    "allow": ["DESIGN.md", "docs/specs/**", "src/styles/**"],
+    "deny": ["src/server/**", "src/api/**"]
+  },
+  "architect": {
+    "allow": ["docs/specs/**", "src/shared/**", "package.json", "tsconfig.json", ".gstack/**"],
+    "deny": []
+  },
+  "be-dev": {
+    "allow": ["src/server/**", "src/api/**", "src/db/**", "tests/api/**"],
+    "deny": ["src/client/**", "src/components/**"]
+  },
+  "fe-dev": {
+    "allow": ["src/client/**", "src/components/**", "src/pages/**", "tests/ui/**"],
+    "deny": ["src/server/**", "src/db/**"]
+  },
+  "qa-lead": {
+    "allow": [".gstack/qa-reports/**", "tests/**"],
+    "deny": ["src/**"]
+  },
+  "reviewer-cso": {
+    "allow": [".gstack/**", "CHANGELOG.md", "README.md"],
+    "deny": ["src/**"]
+  }
+}

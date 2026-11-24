@@ -1,0 +1,18 @@
+{
+  "name": "gstack-swarm",
+  "displayName": "GStack Full Runtime & Swarm Team",
+  "version": "1.0.0",
+  "description": "Full-runtime port of garrytan/gstack for Google Antigravity 2.0 & native /swarm: 66 compiled skills, 9-specialist Review Army, 170+ CLI ledgers, native binaries (browse/design/make-pdf/diagram/cso), and Zero-Trust Multi-Agent File-Ownership Hooks.",
+  "logo": "assets/logo.svg",
+  "author": {
+    "name": "Adapted from Garry Tan's gstack for Antigravity",
+    "url": "https://github.com/garrytan/gstack"
+  },
+  "homepage": "https://github.com/garrytan/gstack",
+  "repository": "https://github.com/garrytan/gstack",
+  "suggestedPrompts": [
+    "/swarm 启动 gstack-swarm 全引擎团队，跑通需求诊断、UI 规范、架构切分、TDD 开发、浏览器 QA 与 9 专家审查",
+    "/swarm 启动 gstack-swarm 排障组，启用会话级 freeze 目录锁与 3 次熔断机制根治当前 Bug",
+    "对当前分支执行 gstack-review（含 gate-diff 门禁防篡改扫描与 9 专家并行审查）及 gstack-qa 实测"
+  ]
+}
