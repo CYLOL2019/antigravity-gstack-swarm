@@ -34,7 +34,7 @@ process.stdin.on('end', () => {
     const prompt = typeof payload?.lastUserInput === 'string' ? payload.lastUserInput.trim() : '';
     const convId = typeof payload?.conversationId === 'string' ? payload.conversationId : 'default';
 
-    if (!prompt || prompt.startsWith('/') || prompt.startsWith('<SYSTEM_MESSAGE>') || prompt.includes('<cross-session-message')) {
+    if (!prompt || prompt.startsWith('/') || prompt.startsWith('<SYSTEM_MESSAGE>') || prompt.includes('<cross-session-message') || prompt.includes('<agent-message')) {
       process.stdout.write('{}\n');
       return;
     }
@@ -88,9 +88,10 @@ process.stdin.on('end', () => {
     if (keys.length > 100) delete seen[keys[0]];
     fs.writeFileSync(seenFile, JSON.stringify(seen));
 
+    const trigger = typeof res?.route?.trigger === 'string' ? res.route.trigger : '-';
     fs.appendFileSync(
       path.join(hooksDir, 'skill-route.log'),
-      `${new Date().toISOString()} session=${convId} event=routed skill=${agySkillName} host=antigravity\n`
+      `${new Date().toISOString()} session=${convId} event=routed skill=${agySkillName} trigger=${JSON.stringify(trigger)} chars=${prompt.length} host=antigravity\n`
     );
 
     const msg = `[gstack skill routing] This request matches the "${agySkillName}" workflow. Read "${skillMdPath}" with read_file and follow its procedure (disable via: gstack config set skill_routing off).`;

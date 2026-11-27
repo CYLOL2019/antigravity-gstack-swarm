@@ -11,6 +11,8 @@ const WRITE_HOOK = path.join(REPO_ROOT, 'plugin', 'hooks', 'pre-tool-write.mjs')
 const STOP_HOOK = path.join(REPO_ROOT, 'plugin', 'hooks', 'stop-gate.mjs');
 const SWARM_LOCK = path.join(REPO_ROOT, 'runtime', 'bin', 'gstack-swarm-lock.mjs');
 const COMMAND_HOOK = path.join(REPO_ROOT, 'plugin', 'hooks', 'pre-tool-command.mjs');
+const ROUTE_HOOK = path.join(REPO_ROOT, 'plugin', 'hooks', 'pre-invocation-route.mjs');
+const DISPATCH_BIN = path.join(REPO_ROOT, 'runtime', 'bin', 'gstack-dispatch.mjs');
 const WIN_BROWSE = path.join(REPO_ROOT, 'plugin', 'hooks', 'win-browse-daemon.mjs');
 
 function runHook(hookPath, payloadObj, envExtra = {}) {
@@ -240,5 +242,37 @@ test('Command guard decisions are unchanged by the browse warm-up', () => {
     assert.equal(run('gstack browse goto https://example.com').decision, 'allow');
   } finally {
     fs.rmSync(tmpState, { recursive: true, force: true });
+  }
+});
+
+test('Skill router skips subagent <agent-message> and <cross-session-message> hand-backs', () => {
+  const tmpState = fs.mkdtempSync(path.join(os.tmpdir(), 'gstack-test-state-'));
+  try {
+    for (const prompt of [
+      'Another session sent a message:\n<agent-message from="reviewer">Please run code review</agent-message>',
+      '<cross-session-message from="worker">review this PR</cross-session-message>',
+    ]) {
+      const res = runHook(ROUTE_HOOK, {
+        conversationId: 'route-conv-1',
+        lastUserInput: prompt,
+      }, { GSTACK_STATE_ROOT: tmpState });
+      assert.deepEqual(res, {});
+    }
+  } finally {
+    fs.rmSync(tmpState, { recursive: true, force: true });
+  }
+});
+
+test('gstack dispatch reports upstream 1.104.0.0 removal when cso launcher is absent', () => {
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'gstack-test-root-'));
+  try {
+    const r = spawnSync(process.execPath, [DISPATCH_BIN, 'cso'], {
+      encoding: 'utf8',
+      env: { ...process.env, GSTACK_ROOT: tmpRoot },
+    });
+    assert.equal(r.status, 1);
+    assert.match(r.stderr, /removed in upstream gstack 1\.104\.0\.0/i);
+  } finally {
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
   }
 });

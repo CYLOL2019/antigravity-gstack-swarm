@@ -1,7 +1,7 @@
 {
   "name": "antigravity-gstack-swarm",
-  "version": "1.0.0",
-  "description": "Full-runtime port of garrytan/gstack for Google Antigravity 2.0 & native /swarm — featuring 66 compiled skills, 9-specialist Review Army, 170+ CLI ledgers, native binaries, and Zero-Trust Multi-Agent File-Ownership Hooks.",
+  "version": "1.1.0",
+  "description": "Full-runtime port of garrytan/gstack (v1.104.1.0+) for Google Antigravity 2.0 & native /swarm — featuring 65 compiled skills, 9-specialist Review Army, large-diff sliced review, 170+ CLI ledgers, native engines, and Zero-Trust Multi-Agent File-Ownership Hooks.",
   "type": "module",
   "license": "MIT",
   "homepage": "https://github.com/cxbrucewayen/antigravity-gstack-swarm#readme",

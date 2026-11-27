@@ -2,7 +2,7 @@
 <#
 .SYNOPSIS
   One-command Windows installer for Antigravity GStack Swarm (Full Runtime Edition).
-  Clones/updates garrytan/gstack, installs Bun & jq if missing, compiles native binaries + 66 skills
+  Clones/updates garrytan/gstack, installs Bun & jq if missing, compiles native binaries + upstream skills
   with the 9-specialist Review Army unlocked, deploys the global Antigravity plugin & enforced hooks,
   and runs `gstack doctor`.
 #>
@@ -49,10 +49,17 @@ Write-Host "    Bun version: $(bun --version)"
 Write-Host "==> [2/6] Cloning or updating garrytan/gstack in $GstackDest..." -ForegroundColor Cyan
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $GstackDest) | Out-Null
 if (Test-Path (Join-Path $GstackDest ".git")) {
+  # Reset installer-managed tracked files so upstream edits never block fast-forward pulls.
+  $managedPaths = @("hosts/agy.ts", "lib/diagram-render/dist") | Where-Object { Test-Path (Join-Path $GstackDest $_) }
+  if ($managedPaths.Count -gt 0) {
+    git -C $GstackDest checkout -- @managedPaths
+  }
   git -C $GstackDest pull --ff-only
+  if ($LASTEXITCODE -ne 0) { throw "git pull --ff-only failed in $GstackDest" }
 } else {
   if (Test-Path $GstackDest) { Remove-Item -Recurse -Force $GstackDest }
   git clone --depth 1 $GstackRepoUrl $GstackDest
+  if ($LASTEXITCODE -ne 0) { throw "git clone failed for $GstackRepoUrl" }
 }
 
 Write-Host "==> [3/6] Injecting Antigravity Full-Tier Host, Swarm Lock Engine & Windows Shims..." -ForegroundColor Cyan
@@ -82,13 +89,12 @@ if ($realPy -and ($realPy -notmatch "WindowsApps")) {
   Set-Content -Path (Join-Path $GstackDest "bin-shim\python3") -Value "#!/usr/bin/env bash`nexec `"$msysPy`" `"`$@`"`n" -NoNewline
 }
 
-Write-Host "==> [4/6] Installing gstack dependencies & compiling native binaries + 64 upstream skills..." -ForegroundColor Cyan
+Write-Host "==> [4/6] Installing gstack dependencies & compiling native binaries + upstream skills..." -ForegroundColor Cyan
 Push-Location $GstackDest
 try {
   bun install
   $env:GSTACK_GIT_BASH = $GitBash
   $env:GSTACK_SETUP_RUNNING = "1"
-  $env:GSTACK_SETUP_SKIP_CSO_BUILD = "1"
   $msysRoot = "/" + ($GstackDest.Substring(0,1).ToLower()) + ($GstackDest.Substring(2) -replace '\\','/')
   $msysNpm  = "/" + ($NpmPrefix.Substring(0,1).ToLower()) + ($NpmPrefix.Substring(2) -replace '\\','/')
 
@@ -96,18 +102,23 @@ try {
     set -e
     export PATH='$msysRoot/bin-shim:${msysNpm}:$msysRoot/bin:'`$PATH
     cd '$msysRoot'
+    # Clean up retired /cso native helper leftovers removed in upstream gstack 1.104.0.0.
+    rm -rf bin/gstack-cso-launcher bin/gstack-cso-launcher.exe \
+      bin/gstack-cso-core bin/gstack-cso-core.exe \
+      bin/gstack-cso-watchdog bin/gstack-cso-watchdog.exe \
+      bin/.gstack-cso-generation bin/.gstack-cso-generation.lock \
+      bin/.gstack-cso-build-result bin/.gstack-cso-build.log \
+      bin/.gstack-cso-build.lock bin/.gstack-cso-evaluation \
+      bin/.gstack-cso-stage.* \
+      lib/cso/images/gstack-cso-verifier lib/cso/images/gstack-cso-preparation 2>/dev/null || true
+    rmdir lib/cso/images lib/cso 2>/dev/null || true
     echo 'agy' > .gstack-installed-hosts
     bash scripts/build.sh
     bun run build:diagram-render
-    if bash scripts/build-cso.sh 2>/dev/null; then
-      printf 'complete\n' > browse/dist/.build-complete
-      echo '    Native CSO security launcher compiled via MSVC!'
-    else
-      printf 'complete\n' > browse/dist/.build-complete
-      echo '    MSVC C++ workload not detected — skipping optional native CSO launcher (static skills remain active).'
-    fi
   "
+  if ($LASTEXITCODE -ne 0) { throw "gstack native build failed" }
   bun --no-env-file --config=NUL scripts/gen-skill-docs.ts --host agy
+  if ($LASTEXITCODE -ne 0) { throw "gen-skill-docs.ts failed" }
   if (-not $SkipBrowserDownload) {
     # npx evaluates gstack's package.json overrides and fails with EOVERRIDE on Windows npm.
     node node_modules/playwright/cli.js install chromium
@@ -166,4 +177,5 @@ try {
   Pop-Location
 }
 & (Join-Path $NpmPrefix "gstack.ps1") doctor
-Write-Host "`nSUCCESS! Antigravity GStack Swarm (66 skills + native binaries + enforced Zero-Trust hooks) is live!" -ForegroundColor Green
+$SkillCount = (Get-ChildItem $PluginSkillsDir -Directory).Count
+Write-Host "`nSUCCESS! Antigravity GStack Swarm ($SkillCount skills + native binaries + enforced Zero-Trust hooks) is live!" -ForegroundColor Green

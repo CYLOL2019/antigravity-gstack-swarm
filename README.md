@@ -2,7 +2,7 @@
 
 > **Full-Runtime Port of [Garry Tan's `gstack`](https://github.com/garrytan/gstack) + Zero-Trust Multi-Agent Swarm Engine for Google Antigravity 2.0**
 >
-> 将 Y Combinator 总裁 Garry Tan 开源的 [`garrytan/gstack`](https://github.com/garrytan/gstack) 全部底层能力（**66 个编译技能、170+ CLI 防伪账本与扫描器、5 大原生编译二进制、9 专家并行审查团**）深度移植至 **Google Antigravity 2.0 IDE**，并与原生 **`/swarm` 多智能体共享看板**及**硬件级零信任文件隔离钩子（`hooks.json`）**无缝融合，打造一支真正按硅谷互联网公司全建制运转的 AI 研发团队。
+> 将 Y Combinator 总裁 Garry Tan 开源的 [`garrytan/gstack`](https://github.com/garrytan/gstack) 全部底层能力（**65 个编译技能、170+ CLI 防伪账本与扫描器、4 大原生编译/渲染引擎、9 专家并行审查团、超 2 MB 大 diff 切片评审与大型 PR `/gstack-ship` 支持**）深度移植至 **Google Antigravity 2.0 IDE**，并与原生 **`/swarm` 多智能体共享看板**及**硬件级零信任文件隔离钩子（`hooks.json`）**无缝融合，打造一支真正按硅谷互联网公司全建制运转的 AI 研发团队。
 
 [![CI](https://github.com/cxbrucewayen/antigravity-gstack-swarm/actions/workflows/ci.yml/badge.svg)](https://github.com/cxbrucewayen/antigravity-gstack-swarm/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](./LICENSE)
@@ -22,8 +22,8 @@ Upstream [`garrytan/gstack`](https://github.com/garrytan/gstack) is an extraordi
 
 | Capability / 能力对比 | Upstream `gstack` (`--host agy`) | `antigravity-gstack-swarm` (This Repo) |
 | :--- | :---: | :---: |
-| **Antigravity 2.0 Global Plugin (`~/.gemini/config/plugins/`)** | No | **Yes (66 Skills + Rules + Hooks)** |
-| **Compiled Native Binaries (`browse`, `design`, `make-pdf`, `diagram`, `cso`)** | Manual / Partial on Win | **1-Click Automated Build (Win/macOS/Linux)** |
+| **Antigravity 2.0 Global Plugin (`~/.gemini/config/plugins/`)** | No | **Yes (65 Skills + Rules + Hooks)** |
+| **Compiled Native Engines (`browse`, `design`, `make-pdf`, `diagram-render`)** | Manual / Partial on Win | **1-Click Automated Build (Win/macOS/Linux)** |
 | **170+ CLI Ledgers (`wtree`, `evidence`, `gate-diff`, `state-matrix`, `learnings`)** | Bash-only | **Universal `gstack` CLI in PowerShell, CMD & Bash** |
 | **9-Specialist Parallel Review Army (`REVIEW_ARMY`)** | Suppressed | **Fully Unlocked & Wired to Subagents / Swarm** |
 | **Lifecycle Safety Hooks (`/careful`, `/freeze`, `skill-route`, `Stop` gate)** | Advisory only | **Hardware-Enforced via Native `hooks.json`** |
@@ -49,7 +49,7 @@ flowchart TB
         FE["@fe-dev<br/>DESIGN.md + TDD"] <-->|"Screenshot + Console Check"| QA
         QA -->|"Escalation (3-Strike Breaker)"| DBG["@debugger<br/>gstack-investigate<br/>Session-Scoped Freeze"]
         DBG --> QA
-        QA -->|"QA Green"| Rev["@reviewer-cso<br/>gstack gate-diff + 9-Specialist Review Army<br/>+ CSO OWASP/STRIDE + gstack ship"]
+        QA -->|"QA Green"| Rev["@reviewer-cso<br/>gstack gate-diff + 9-Specialist Review Army<br/>+ Sliced Large-Diff & Security Audit + gstack-ship"]
     end
 
     subgraph Hooks["Hardware-Enforced Antigravity Hooks (hooks.json)"]
@@ -76,7 +76,7 @@ flowchart TB
 - **`@be-dev` / `@fe-dev`** (`gstack-build-check`): Strict Reuse Ladder + Red-Green-Refactor TDD, producing cryptographic working-tree test receipts via `gstack evidence run`.
 - **`@debugger`** (`gstack-investigate`): Iron Law (*"No fixes without root cause investigation first"*), **3-Strike Hypothesis Circuit Breaker** (auto-stops and escalates after 3 failed hypotheses), and **Session-Scoped Freeze** (`freeze-session`).
 - **`@qa-lead`** (`gstack-qa`, `gstack-browse`): Dual-engine live E2E verification combining Antigravity's visual `browser` subagent and `gstack browse` (~100ms/op Chromium daemon), mobile `375x812` checks, and the 8-dimension Health Score Rubric.
-- **`@reviewer-cso`** (`gstack-review`, `gstack-cso`, `gstack-ship`): Runs `gstack gate-diff` (catches `RH-1..RH-16` deleted/weakened tests), dispatches the **9-Specialist Parallel Review Army**, runs Sideways Sweep + OWASP/STRIDE static security audits, and stamps `gstack review-log` receipts.
+- **`@reviewer-cso`** (`gstack-review`, `gstack-test-audit`, `gstack-ship`): Runs `gstack gate-diff` (catches `RH-1..RH-16` deleted/weakened tests), dispatches the **9-Specialist Parallel Review Army** (with automatic >2 MB large-diff slicing via `gstack review-dispatch`), runs Sideways Sweep + direct OWASP/STRIDE security audit (aligned with upstream gstack v1.104+ removal of `/cso`), supports large-PR `/gstack-ship`, and stamps `gstack review-log` receipts.
 
 ### 2. Zero-Trust Automatic Role & File-Ownership Hardware Locks（零信任角色自动识别硬件锁）
 `plugin/hooks/pre-tool-write.mjs` inspects the Antigravity `transcriptPath` on `write_file` / `edit_file` to identify `/swarm` workers automatically from Turn 1:
@@ -100,7 +100,7 @@ gstack doctor                                              # Full installation h
 ## Quick Start / 一键安装
 
 ### Windows (PowerShell 7+ & Git for Windows)
-> Prerequisites: [Node.js >= 20](https://nodejs.org/) and [Git for Windows](https://git-scm.com/) (includes Git Bash). Optional: Visual Studio 2022 C++ Build Tools (compiles the hardened C11 `gstack-cso-launcher.exe`). Bun and `jq` are installed automatically if missing.
+> Prerequisites: [Node.js >= 20](https://nodejs.org/) and [Git for Windows](https://git-scm.com/) (includes Git Bash). Bun and `jq` are installed automatically if missing.
 
 ```powershell
 git clone https://github.com/cxbrucewayen/antigravity-gstack-swarm.git
@@ -109,7 +109,7 @@ pwsh -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
 ### macOS & Linux
-> Prerequisites: `node >= 20`, `git`, `jq`, and `cc`/`clang` (optional, for native CSO launcher). Bun is installed automatically if missing.
+> Prerequisites: `node >= 20`, `git`, and `jq`. Bun is installed automatically if missing.
 
 ```bash
 git clone https://github.com/cxbrucewayen/antigravity-gstack-swarm.git
@@ -135,7 +135,7 @@ Once installed, open any workspace in **Google Antigravity 2.0** and run:
 
 ### 3. Pre-Ship Audit & Browser QA Gate（上线前代码、UI 与安全并发门禁）
 ```text
-/swarm 启动 gstack-swarm 上线门禁，并发执行 gstack gate-diff 门禁防篡改扫描、9 专家 Review Army 代码审查、CSO 安全审计与真实浏览器 QA 走查打分。
+/swarm 启动 gstack-swarm 上线门禁，并发执行 gstack gate-diff 门禁防篡改扫描、9 专家 Review Army 代码审查（含超 2 MB 大 diff 切片评审）、直接 OWASP/STRIDE 安全审计与真实浏览器 QA 走查打分。
 ```
 
 ---

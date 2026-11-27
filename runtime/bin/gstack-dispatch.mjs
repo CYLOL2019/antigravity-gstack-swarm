@@ -58,8 +58,7 @@ Root: ${GSTACK_ROOT}
 Core compiled binaries:
   gstack browse <cmd> [args...]        Headless/headed Chromium daemon (~100ms/op)
   gstack design <cmd> [args...]        Visual mockup & comparison board server
-  gstack make-pdf <md> [args...]       Offline Markdown + Mermaid/Excalidraw -> PDF/HTML/DOCX
-  gstack cso [args...]                 Native Chief Security Officer static/runtime auditor
+  gstack make-pdf <md> [args...]       Offline Markdown + Mermaid/Excalidraw -> PDF/HTML/DOCX (Swiss default, --style plain)
 
 Safety & Swarm hardware locks:
   gstack freeze set <dir>              Global directory edit lock (enforced by PreToolUse hook)
@@ -68,11 +67,12 @@ Safety & Swarm hardware locks:
 
 Engineering & Ledger CLIs (170+ tools in bin/):
   gstack doctor | paths | config | wtree | gate-diff | diff-scope | state-matrix
-  gstack evidence | review-log | review-read | learnings-log | learnings-search
+  gstack review-plan | review-dispatch | review-log | review-read | approvals
+  gstack evidence | learnings-log | learnings-search | banned-terms | first-use
   gstack flaky | pregate | ship-preflight | ship-receipt | ship-queue | pr-wait
   gstack review-bots | issue-guard | egress | context-bill | decision-trail
-  gstack worktree-audit | factory-scorecard | clean | skill-route | skill-contract
-  gstack slop-diff [base]`);
+  gstack aside-repl | worktree-audit | factory-scorecard | clean | skill-route
+  gstack skill-contract | slop-diff [base]`);
   process.exit(0);
 }
 
@@ -139,7 +139,7 @@ if (sub === 'make-pdf' || sub === 'pdf') run(path.join(GSTACK_ROOT, 'make-pdf', 
 if (sub === 'cso') {
   const csoBin = path.join(GSTACK_ROOT, 'bin', `gstack-cso-launcher${EXE}`);
   if (fs.existsSync(csoBin)) run(csoBin, rest);
-  console.error(`gstack cso: native helper not built at ${csoBin}`);
+  console.error('gstack cso: /cso and its native helper were removed in upstream gstack 1.104.0.0. Ask your agent for a direct security audit or run gstack-review instead.');
   process.exit(1);
 }
 if (sub === 'slop-diff') run(BUN_BIN, ['--no-env-file', `--config=${BUN_CFG}`, path.join(GSTACK_ROOT, 'scripts', 'slop-diff.ts'), ...rest]);

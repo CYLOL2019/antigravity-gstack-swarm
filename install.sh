@@ -20,11 +20,24 @@ fi
 echo "==> [2/6] Cloning or updating garrytan/gstack in $GSTACK_DEST..."
 mkdir -p "$(dirname "$GSTACK_DEST")"
 if [ -d "$GSTACK_DEST/.git" ]; then
+  # Reset installer-managed tracked files so upstream edits never block fast-forward pulls.
+  git -C "$GSTACK_DEST" checkout -- hosts/agy.ts lib/diagram-render/dist 2>/dev/null || true
   git -C "$GSTACK_DEST" pull --ff-only
 else
   rm -rf "$GSTACK_DEST"
   git clone --depth 1 "$GSTACK_REPO_URL" "$GSTACK_DEST"
 fi
+
+# Clean up retired /cso native helper leftovers removed in upstream gstack 1.104.0.0.
+rm -rf "$GSTACK_DEST"/bin/gstack-cso-launcher "$GSTACK_DEST"/bin/gstack-cso-launcher.exe \
+  "$GSTACK_DEST"/bin/gstack-cso-core "$GSTACK_DEST"/bin/gstack-cso-core.exe \
+  "$GSTACK_DEST"/bin/gstack-cso-watchdog "$GSTACK_DEST"/bin/gstack-cso-watchdog.exe \
+  "$GSTACK_DEST"/bin/.gstack-cso-generation "$GSTACK_DEST"/bin/.gstack-cso-generation.lock \
+  "$GSTACK_DEST"/bin/.gstack-cso-build-result "$GSTACK_DEST"/bin/.gstack-cso-build.log \
+  "$GSTACK_DEST"/bin/.gstack-cso-build.lock "$GSTACK_DEST"/bin/.gstack-cso-evaluation \
+  "$GSTACK_DEST"/bin/.gstack-cso-stage.* \
+  "$GSTACK_DEST"/lib/cso/images/gstack-cso-verifier "$GSTACK_DEST"/lib/cso/images/gstack-cso-preparation 2>/dev/null || true
+rmdir "$GSTACK_DEST/lib/cso/images" "$GSTACK_DEST/lib/cso" 2>/dev/null || true
 
 echo "==> [3/6] Injecting Antigravity Full-Tier Host & Zero-Trust Swarm Lock Engine..."
 cp -f "$REPO_ROOT/runtime/hosts/agy.ts" "$GSTACK_DEST/hosts/agy.ts"
@@ -39,7 +52,7 @@ exec node "${GSTACK_ROOT:-$HOME/.gemini/gstack}/bin/gstack-dispatch.mjs" "$@"
 EOF
 chmod +x "$HOME/.local/bin/gstack"
 
-echo "==> [4/6] Installing dependencies & compiling native binaries + 64 upstream skills..."
+echo "==> [4/6] Installing dependencies & compiling native binaries + upstream skills..."
 (
   cd "$GSTACK_DEST"
   bun install
@@ -94,4 +107,5 @@ done
 echo "==> [6/6] Running verification tests & gstack doctor..."
 (cd "$REPO_ROOT" && node --test tests/*.test.mjs)
 "$HOME/.local/bin/gstack" doctor
-echo "SUCCESS! Antigravity GStack Swarm is installed and active (ensure ~/.local/bin is on your PATH)."
+SKILL_COUNT="$(find "$PLUGIN_DEST/skills" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')"
+echo "SUCCESS! Antigravity GStack Swarm (${SKILL_COUNT} skills + native binaries + enforced Zero-Trust hooks) is installed and active (ensure ~/.local/bin is on your PATH)."

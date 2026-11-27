@@ -1,8 +1,8 @@
 {
   "name": "gstack-swarm",
   "displayName": "GStack Full Runtime & Swarm Team",
-  "version": "1.0.0",
-  "description": "Full-runtime port of garrytan/gstack for Google Antigravity 2.0 & native /swarm: 66 compiled skills, 9-specialist Review Army, 170+ CLI ledgers, native binaries (browse/design/make-pdf/diagram/cso), and Zero-Trust Multi-Agent File-Ownership Hooks.",
+  "version": "1.1.0",
+  "description": "Full-runtime port of garrytan/gstack (v1.104.1.0+) for Google Antigravity 2.0 & native /swarm: 65 compiled skills, 9-specialist Review Army, large-diff sliced review, 170+ CLI ledgers, native engines (browse/design/make-pdf/diagram), and Zero-Trust Multi-Agent File-Ownership Hooks.",
   "logo": "assets/logo.svg",
   "author": {
     "name": "cxbrucewayen (adapted from Garry Tan's gstack)",
